@@ -1,0 +1,576 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courses Page with Particle.js</title>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background-color: #0a0a1c;
+            color: white;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a1c 0%, #1e1e3f 100%);
+            z-index: -1;
+        }
+
+        .brand-section {
+            position: relative;
+            text-align: center;
+            padding: 32px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            margin: 20px auto;
+            border-radius: 24px;
+            max-width: 576px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+
+        .brand-section:hover {
+            transform: scale(1.01);
+        }
+
+        .brand-section .bg-effects {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .brand-section .content {
+            position: relative;
+            z-index: 10;
+        }
+
+        .brand-title {
+            color: white;
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 8px 0;
+            letter-spacing: -0.025em;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @media (min-width: 768px) {
+            .brand-title {
+                font-size: 3.75rem;
+            }
+        }
+
+        .brand-divider {
+            width: 64px;
+            height: 4px;
+            background: linear-gradient(to right, white, rgba(255, 255, 255, 0.75));
+            margin: 16px auto;
+            border-radius: 9999px;
+        }
+
+        .brand-subtitle {
+            color: white;
+            font-size: 1.125rem;
+            font-weight: 300;
+            opacity: 0.9;
+            letter-spacing: 0.025em;
+            margin: 0;
+        }
+
+        @media (min-width: 768px) {
+            .brand-subtitle {
+                font-size: 1.25rem;
+            }
+        }
+
+        .quote-section {
+            background: linear-gradient(45deg, #ff9a9e, #fad0c4);
+            border-radius: 12px;
+            text-align: center;
+            width: 91.666667%;
+            max-width: 672px;
+            padding: 24px;
+            box-sizing: border-box;
+            color: #1f2937;
+            margin: 32px auto;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.5s ease;
+        }
+
+        @media (min-width: 768px) {
+            .quote-section {
+                padding: 32px;
+            }
+        }
+
+        .quote-section:hover {
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            transform: scale(1.01);
+        }
+
+        .quote-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #111827;
+        }
+
+        @media (min-width: 768px) {
+            .quote-title {
+                font-size: 1.875rem;
+            }
+        }
+
+        .quote-text {
+            font-size: 1.125rem;
+            margin-bottom: 12px;
+            line-height: 1.75;
+            color: #374151;
+            font-style: italic;
+        }
+
+        @media (min-width: 768px) {
+            .quote-text {
+                font-size: 1.25rem;
+            }
+        }
+
+        .quote-author {
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: right;
+            color: #4b5563;
+        }
+
+        @media (min-width: 768px) {
+            .quote-author {
+                font-size: 1.125rem;
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 40px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .search-section {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 48px;
+            width: 91.666667%;
+            max-width: 512px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        @media (min-width: 640px) {
+            .search-section {
+                flex-direction: row;
+            }
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            color: white;
+            font-size: 1.125rem;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            border: none;
+            margin-bottom: 16px;
+        }
+
+        @media (min-width: 640px) {
+            .search-input {
+                width: 80%;
+                margin-bottom: 0;
+                margin-right: 16px;
+            }
+        }
+
+        .search-input::placeholder {
+            color: #d1d5db;
+        }
+
+        .search-input:focus {
+            box-shadow: 0 0 0 2px #ec4899, 0 25px 50px rgba(0, 0, 0, 0.25);
+        }
+
+        .search-button {
+            width: 100%;
+            padding: 16px 32px;
+            border-radius: 12px;
+            background: linear-gradient(to right, #db2777, #dc2626);
+            color: white;
+            font-size: 1.125rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            border: none;
+            outline: none;
+        }
+
+        @media (min-width: 640px) {
+            .search-button {
+                width: auto;
+            }
+        }
+
+        .search-button:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(to right, #be185d, #b91c1c);
+        }
+
+        .search-button:focus {
+            box-shadow: 0 0 0 2px #ec4899;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 32px;
+        }
+
+        @media (min-width: 768px) {
+            .courses-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .courses-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .course-card {
+            background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+            padding: 32px;
+            border-radius: 12px;
+            border: 1px solid rgba(236, 72, 153, 0.3);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            text-align: center;
+            transition: all 0.5s ease;
+            transform: translateY(0);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .course-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+        }
+
+        .course-card .card-border {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            transition: all 0.4s ease;
+        }
+
+        .course-card:hover .card-border {
+            border-color: #f472b6;
+        }
+
+        .course-image {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 24px;
+            border-radius: 8px;
+            border: 1px solid rgba(236, 72, 153, 0.2);
+            transition: transform 0.4s ease;
+        }
+
+        .course-card:hover .course-image {
+            transform: scale(1.02);
+        }
+
+        .course-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #f472b6;
+            letter-spacing: 0.025em;
+        }
+
+        .course-price {
+            font-size: 1.25rem;
+            margin-bottom: 12px;
+            color: #d1d5db;
+        }
+
+        .course-date {
+            font-size: 1.25rem;
+            margin-bottom: 20px;
+            color: #d1d5db;
+        }
+
+        .course-link {
+            display: inline-block;
+            padding: 16px 40px;
+            background: linear-gradient(to right, #db2777, #dc2626);
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 600;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            text-decoration: none;
+        }
+
+        .course-link:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            background: linear-gradient(to right, #be185d, #b91c1c);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+
+    <!-- LearnPulse Brand Section -->
+    <div class="brand-section">
+        <div class="bg-effects"></div>
+        <div class="content">
+            <h1 class="brand-title">LearnPulse</h1>
+            <div class="brand-divider"></div>
+            <p class="brand-subtitle">Your Learning Journey Starts Here</p>
+        </div>
+    </div>
+
+    <!-- Daily Inspiration Quote Section -->
+    <div class="quote-section">
+         <h1>Daily Inspiration</h1>
+         <blockquote>"<%= title %>"</blockquote>
+         <p class="author"><em>— <%= author %></em></p>
+     </div>
+
+    <div class="container">
+        <!-- Search Bar -->
+        <div class="search-section">
+            <input type="text" id="searchInput" placeholder="Search courses..." class="search-input">
+            <button onclick="searchCourses()" class="search-button">Search</button>
+        </div>
+
+        <!-- Courses Grid -->
+        <div class="courses-grid">
+            <div class="course-card">
+                <div class="card-border"></div>
+                <img src="https://i.postimg.cc/pVKv3cLR/667423824369-IMG-9619.png" alt="Abhay 2025" class="course-image">
+                <h2 class="course-title">Abhay 2025</h2>
+                <p class="course-price">Price: Free</p>
+                <p class="course-date">Launch Date: January 1, 2025</p>
+                <a href="./abhay" class="course-link">Go to Course</a>
+            </div>
+            <div class="course-card">
+                <div class="card-border"></div>
+                <img src="https://theeduverse.xyz/images/IMG_20250225_201659_071.jpg" alt="Arrambh 2025" class="course-image">
+                <h2 class="course-title">Arrambh 2025</h2>
+                <p class="course-price">Price: Free</p>
+                <p class="course-date">Launch Date: January 1, 2025</p>
+                <a href="./aarambh" class="course-link">Go to Course</a>
+            </div>
+            <div class="course-card">
+                <div class="card-border"></div>
+                <img src="https://theeduverse.xyz/images/IMG_20250225_201659_071.jpg" alt="Aarambh 10th 2026" class="course-image">
+                <h2 class="course-title">Aarambh 10th 2026</h2>
+                <p class="course-price">Price: Free</p>
+                <p class="course-date">Launch Date: January 1, 2026</p>
+                <a href="./10" class="course-link">Go to Course</a>
+            </div>
+            <div class="course-card">
+                <div class="card-border"></div>
+                <img src="https://dxixtlyravvxx.cloudfront.net/540/admin_v1/bundle_management/course/707679428609_11th%20prarambh%20sci%20app%20with%20eng.jpg" alt="Prarambh Science 2026" class="course-image">
+                <h2 class="course-title">Prarambh Science 2026</h2>
+                <p class="course-price">Price: Free</p>
+                <p class="course-date">Launch Date: January 1, 2026</p>
+                <a href="./11" class="course-link">Go to Course</a>
+            </div>
+            <div class="course-card">
+                <div class="card-border"></div>
+                <img src="https://dxixtlyravvxx.cloudfront.net/540/admin_v1/bundle_management/course/695788128610_11th%20prarambh%20comm%20app%20with%20eng.jpg" alt="Prarambh Commerce 2026" class="course-image">
+                <h2 class="course-title">Prarambh Commerce 2026</h2>
+                <p class="course-price">Price: Free</p>
+                <p class="course-date">Launch Date: January 1, 2026</p>
+                <a href="./11eco" class="course-link">Go to Course</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        // Initialize particles.js background animation
+        particlesJS("particles-js", {
+            "particles": {
+                "number": {
+                    "value": 70,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": ["#ff2e63", "#ff6b6b", "#ffffff", "#00d4ff"]
+                },
+                "shape": {
+                    "type": ["polygon"],
+                    "stroke": {
+                        "width": 0,
+                        "color": "#000000"
+                    },
+                    "polygon": {
+                        "nb_sides": 5
+                    }
+                },
+                "opacity": {
+                    "value": 0.5,
+                    "random": true
+                },
+                "size": {
+                    "value": 4,
+                    "random": true
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 90,
+                    "color": "#ff6b6b",
+                    "opacity": 0.4,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 4,
+                    "direction": "none",
+                    "random": false,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": true,
+                        "mode": ["grab", "bubble"]
+                    },
+                    "onclick": {
+                        "enable": true,
+                        "mode": "push"
+                    },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": {
+                        "distance": 300,
+                        "line_linked": {
+                            "opacity": 0.7
+                        }
+                    },
+                    "bubble": {
+                        "distance": 400,
+                        "size": 50,
+                        "duration": 1,
+                        "opacity": 0.8,
+                        "speed": 2
+                    },
+                    "repulse": {
+                        "distance": 150,
+                        "duration": 0.4
+                    },
+                    "push": {
+                        "particles_nb": 4
+                    },
+                    "remove": {
+                        "particles_nb": 2
+                    }
+                }
+            },
+            "retina_detect": true
+        });
+
+        // Function to filter courses based on search input
+        function searchCourses() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.course-card');
+            cards.forEach(card => {
+                const title = card.querySelector('.course-title').textContent.toLowerCase();
+                if (title.includes(input)) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        }
+
+        // Event listener for real-time search as user types
+        document.getElementById('searchInput').addEventListener('input', searchCourses);
+
+        // Function to get a random quote from ps.json
+        async function getRandomQuote() {
+            try {
+                const response = await fetch('/ps.json');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch quotes');
+                }
+                const data = await response.json();
+                
+                if (data.quotes && data.quotes.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * data.quotes.length);
+                    const randomQuote = data.quotes[randomIndex];
+                    
+                    const quoteTextElement = document.getElementById('quoteText');
+                    const quoteAuthorElement = document.getElementById('quoteAuthor');
+                    
+                    if (quoteTextElement && quoteAuthorElement) {
+                        quoteTextElement.textContent = `"${randomQuote.quote}"`;
+                        quoteAuthorElement.textContent = `— ${randomQuote.author}`;
+                    }
+                } else {
+                    console.log('No quotes found in data');
+                }
+            } catch (error) {
+                console.log('Using fallback quote due to error:', error);
+                // Keep the default fallback quote that's already in the HTML
+            }
+        }
+
+        // Get a random quote when the page loads
+        window.onload = getRandomQuote;
+    </script>
+</body>
+</html>

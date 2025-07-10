@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Notifications</title>
+</head>
+<body>
+    <h1>Test Push Notifications</h1>
+    
+    <div id="status"></div>
+    
+    <button id="subscribe">Subscribe to Notifications</button>
+    <button id="test-notification">Send Test Notification</button>
+    
+    <script>
+        const statusDiv = document.getElementById('status');
+        
+        function updateStatus(message) {
+            statusDiv.innerHTML += '<p>' + message + '</p>';
+            console.log(message);
+        }
+        
+        // Check if service worker and push messaging are supported
+        if ('serviceWorker' in navigator && 'PushManager' in window) {
+            updateStatus('Service Worker and Push messaging are supported');
+            
+            navigator.serviceWorker.register('/sw.js')
+                .then(function(registration) {
+                    updateStatus('Service Worker registered successfully');
+                    console.log('Service Worker registered:', registration);
+                })
+                .catch(function(error) {
+                    updateStatus('Service Worker registration failed: ' + error);
+                    console.error('Service Worker registration failed:', error);
+                });
+        } else {
+            updateStatus('Service Worker or Push messaging not supported');
+        }
+        
+        document.getElementById('subscribe').addEventListener('click', async function() {
+            try {
+                const registration = await navigator.serviceWorker.ready;
+                const subscription = await registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array('<%= process.env.VAPID_PUBLIC_KEY %>')
+                });
+                
+                const response = await fetch('/subscribe', {
+                    method: 'POST',
+                    body: JSON.stringify(subscription),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    updateStatus('Successfully subscribed to notifications');
+                } else {
+                    updateStatus('Failed to subscribe: ' + response.statusText);
+                }
+            } catch (error) {
+                updateStatus('Error subscribing: ' + error.message);
+            }
+        });
+        
+        document.getElementById('test-notification').addEventListener('click', async function() {
+            try {
+                const response = await fetch('/admin/send-notification', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title: 'Test Notification',
+                        body: 'This is a test notification from your app!',
+                        icon: '/generated-icon.png',
+                        url: '/'
+                    })
+                });
+                
+                const result = await response.json();
+                updateStatus('Notification response: ' + JSON.stringify(result));
+            } catch (error) {
+                updateStatus('Error sending notification: ' + error.message);
+            }
+        });
+        
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding)
+                .replace(/\-/g, '+')
+                .replace(/_/g, '/');
+            
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+            
+            for (let i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
+            }
+            return outputArray;
+        }
+    </script>
+</body>
+</html>

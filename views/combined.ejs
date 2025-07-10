@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combined Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" crossorigin="anonymous" />
+    <style>
+        body {
+            background: linear-gradient(to bottom right, #0F172A, #1E1B4B, #4C1D95);
+            background-size: cover;
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            color: #ffffff;
+        }
+
+        .tab-container {
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 20px;
+            display: none; /* Hidden initially until password is verified */
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(16, 16, 16, 0.6);
+            border-radius: 10px 10px 0 0;
+            overflow: hidden;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ccc;
+            cursor: pointer;
+            text-align: center;
+            border: none;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: rgba(0, 255, 234, 0.2);
+            color: #00ffea;
+        }
+
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+      
+
+        .content.active {
+            display: block;
+        }
+
+        .quote-section {
+            background: linear-gradient(45deg, #ff9a9e, #fad0c4);
+            border-radius: 8px;
+            text-align: center;
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            box-sizing: border-box;
+            color: #333;
+            margin-bottom: 20px;
+            display: none; /* Hidden initially until password is verified */
+        }
+
+        .quote-section h1 {
+            margin-top: 0;
+            font-size: 1.8em;
+        }
+
+        .quote-section blockquote {
+            font-style: italic;
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+
+        .author {
+            text-align: right;
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 0;
+        }
+
+        /* Index Form Styles */
+        .add-form {
+            color: cyan;
+            text-align: center;
+        }
+
+        .add-form input[type="text"],
+        .add-form input[type="url"],
+        .add-form select {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .add-form input[type="text"]::placeholder,
+        .add-form input[type="url"]::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .add-form select option {
+            background: #1a1a1a;
+            color: white;
+        }
+
+        .add-form button {
+            background: linear-gradient(45deg, #00ffea, #0077ff);
+            color: black;
+            padding: 12px 20px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .add-form button:hover {
+            background: linear-gradient(45deg, #0077ff, #00ffea);
+        }
+
+        /* Admin Styles */
+        .admin-content h1 {
+            color: #f0f0f0;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #ddd;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #555;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+            background-color: #444;
+            color: #fff;
+        }
+
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .admin-button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .admin-button:hover {
+            background-color: #0056b3;
+        }
+
+        .stats {
+            background-color: #333;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .success {
+            background-color: #4CAF50;
+            border: 1px solid #45a049;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .error {
+            background-color: #f44336;
+            border: 1px solid #da190b;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .subscribeBtn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+        .colorful-bell {
+            font-size: 24px;
+            color: #FFD700;
+            animation: bellRing 2s ease-in-out infinite;
+        }
+
+        @keyframes bellRing {
+            0% { transform: rotate(0deg); }
+            15% { transform: rotate(15deg); }
+            30% { transform: rotate(-15deg); }
+            45% { transform: rotate(10deg); }
+            60% { transform: rotate(-10deg); }
+            75% { transform: rotate(5deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s, opacity 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: rgba(30, 30, 30, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
+            color: white;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            position: relative;
+        }
+
+        .modal-content h4 {
+            margin-top: 0;
+            color: #00ffea;
+        }
+
+        .modal-content button {
+            background: #4C1D95;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            width: auto;
+            display: inline-block;
+        }
+
+        .modal-content button:hover {
+            background: #6D28D9;
+        }
+
+        .password {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.3s ease;
+        }
+
+        .password.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .password form {
+            background: rgba(30, 30, 30, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
+            color: white;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .password input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .password input[type="password"]::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .password button {
+            background: linear-gradient(45deg, #00ffea, #0077ff);
+            color: black;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background 0.3s ease;
+        }
+
+        .password button:hover {
+            background: linear-gradient(45deg, #0077ff, #00ffea);
+        }
+    </style>
+</head>
+<body>
+    <div class="learnpulse-brand" style="position: relative; text-align: center; padding: 30px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); margin-bottom: 20px; border-radius: 20px; box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3), inset 0 1px 0 rgba(255,255,255,0.2); overflow: hidden;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.1) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(255,255,255,0.08) 0%, transparent 50%); pointer-events: none;"></div>
+        <div style="position: relative; z-index: 2;">
+            <h1 style="color: white; font-size: 3em; margin: 0; text-shadow: 2px 2px 8px rgba(0,0,0,0.3); font-weight: 700; letter-spacing: -1px;">LearnPulse</h1>
+            <div style="width: 60px; height: 3px; background: linear-gradient(90deg, #fff, rgba(255,255,255,0.5)); margin: 15px auto; border-radius: 2px;"></div>
+            <p style="color: rgba(255,255,255,0.95); margin: 0; font-size: 1.2em; font-weight: 300; letter-spacing: 0.5px;">Your Learning Journey Starts Here</p>
+        </div>
+    </div>
+
+    <div class="quote-section">
+        <h1>Daily Inspiration</h1>
+        <blockquote>
+            "<%= title %>"
+        </blockquote>
+        <p class="author"><em>— <%= author %></em></p>
+    </div>
+
+    <div class="password" id="passwordOverlay">
+        <form id="passwordForm" onsubmit="submitPassword(event)">
+            <h2>Enter Password</h2>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" name="password" id="password" required placeholder="Enter password">
+            </div>
+            <button type="submit">Submit Password</button>
+            <div id="passwordError" class="error" style="display: none;"></div>
+        </form>
+    </div>
+
+   
+
+       
+        <div id="adminPanel" class="content">
+            <div class="admin-content">
+                <h1>Admin Dashboard - Push Notifications</h1>
+
+                <div class="stats">
+                    <h3>Statistics</h3>
+                    <p>Total Subscribers: <span id="subscriberCount">0</span></p>
+                </div>
+
+                <form id="notificationForm">
+                    <div class="form-group">
+                        <label for="notifTitle">Notification Title:</label>
+                        <input type="text" id="notifTitle" name="title" required placeholder="Enter notification title">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="body">Notification Message:</label>
+                        <textarea id="body" name="body" required placeholder="Enter your notification message here..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="icon">Icon URL (optional):</label>
+                        <input type="url" id="icon" name="icon" placeholder="https://example.com/icon.png">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="url">Action URL (optional):</label>
+                        <input type="url" id="url" name="url" placeholder="https://example.com/action">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="target">Send To:</label>
+                        <select id="target" name="target">
+                            <option value="all">All Subscribers</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="admin-button">Send Notification</button>
+                </form>
+
+                <div id="message"></div>
+            </div>
+        </div>
+    </div>
+
+    <button id="subscribeBtn" class="subscribeBtn">
+        <i class="fas fa-bell colorful-bell"></i>
+    </button>
+
+    <div id="messageModalOverlay" class="modal-overlay">
+        <div class="modal-content">
+            <h4 id="modalMessage"></h4>
+            <button id="modalCloseBtn">OK</button>
+        </div>
+    </div>
+
+    <script>
+        // Password Form Submission
+        async function submitPassword(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const password = formData.get('password');
+            const passwordError = document.getElementById('passwordError');
+            const passwordOverlay = document.getElementById('passwordOverlay');
+
+            try {
+                const response = await fetch('/password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ password })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.message === 'success') {
+                    
+                    passwordOverlay.classList.add('hidden');
+                    document.querySelector('.quote-section').style.display = 'block';
+                    document.querySelector('.tab-container').style.display = 'block';
+                    form.reset();
+                } else {
+             
+                    passwordError.textContent = result.error || 'Invalid password';
+                    passwordError.style.display = 'block';
+                }
+            } catch (error) {
+               
+                passwordError.textContent = 'Error: ' + error.message;
+                passwordError.style.display = 'block';
+            }
+        }
+
+        // Initialize UI: Hide dashboard until password is verified
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelector('.quote-section').style.display = 'none';
+          
+        });
+
+        // Tab functionality
+    
+        // Notification functionality
+        let currentSubscription = null; // Store the current subscription object
+
+        const messageModalOverlay = document.getElementById('messageModalOverlay');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+        const subscribeButton = document.getElementById('subscribeBtn');
+        const bellIcon = subscribeButton.querySelector('.colorful-bell');
+
+        function showMessageModal(message) {
+            modalMessage.textContent = message;
+            messageModalOverlay.classList.add('show');
+        }
+
+        modalCloseBtn.addEventListener('click', () => {
+            messageModalOverlay.classList.remove('show');
+        });
+
+        // Function to update the bell icon and button state
+        function updateBellAndButton() {
+            if (currentSubscription) {
+                // If subscribed, change bell color/animation to indicate active subscription
+                bellIcon.style.color = '#4CAF50'; // Green
+                bellIcon.style.animation = 'none'; // Stop ringing
+                subscribeButton.title = 'You are subscribed!'; // Add tooltip
+            } else {
+                // If not subscribed, show the colorful ringing bell
+                bellIcon.style.color = '#FFD700'; // Gold
+                bellIcon.style.animation = 'bellRing 2s ease-in-out infinite'; // Start ringing
+                subscribeButton.title = 'Subscribe to notifications'; // Add tooltip
+            }
+        }
+
+        // Admin functionality
+        async function loadStats() {
+            try {
+                const response = await fetch('/admin/stats');
+                const data = await response.json();
+                document.getElementById('subscriberCount').textContent = data.subscriberCount;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+                
+            }
+        }
+
+        document.getElementById('notificationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const notification = {
+                title: formData.get('title'),
+                body: formData.get('body'),
+                icon: formData.get('icon') || undefined,
+                url: formData.get('url') || undefined,
+                target: formData.get('target')
+            };
+
+            try {
+                const response = await fetch('/admin/send-notification', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(notification)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('message').innerHTML =
+                        `<div class="success">${result.message}</div>`;
+                    document.getElementById('notificationForm').reset();
+                } else {
+                    document.getElementById('message').innerHTML =
+                        `<div class="error">${result.error}</div>`;
+                }
+            } catch (error) {
+                document.getElementById('message').innerHTML =
+                    `<div class="error">Error sending notification: ${error.message}</div>`;
+            }
+        });
+
+        // Service Worker and Push Notification setup
+        if ('serviceWorker' in navigator && 'PushManager' in window) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(async function(reg) {
+                    console.log('Service Worker registered:', reg);
+
+                    // Check for existing subscription on page load
+                    currentSubscription = await reg.pushManager.getSubscription();
+                    updateBellAndButton(); // Update button visual based on initial subscription status
+
+                    subscribeButton.addEventListener("click", async function() {
+                        // If already subscribed, attempt to unsubscribe
+                        if (currentSubscription) {
+                            try {
+                                await currentSubscription.unsubscribe();
+                                const response = await fetch('/unsubscribe', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ endpoint: currentSubscription.endpoint })
+                                });
+                                currentSubscription = null;
+                                showMessageModal("Successfully unsubscribed from notifications.");
+                                updateBellAndButton();
+                                loadStats(); // Refresh stats
+                                console.log('Unsubscribed from push notifications.');
+                            } catch (error) {
+                                console.error('Error unsubscribing:', error);
+                                showMessageModal('Error unsubscribing: ' + error.message);
+                            }
+                            return; // Exit after handling unsubscribe
+                        }
+
+                        // If not subscribed, attempt to subscribe
+                        try {
+                            const permission = await Notification.requestPermission();
+                            if (permission !== 'granted') {
+                                showMessageModal("Notification permission denied! Please allow notifications in your browser settings.");
+                                return;
+                            }
+
+                            // Attempt to subscribe
+                            const subscription = await reg.pushManager.subscribe({
+                                userVisibleOnly: true,
+                                applicationServerKey: urlBase64ToUint8Array('<%= process.env.VAPID_PUBLIC_KEY || "" %>')
+                            });
+
+                            if (!subscription) {
+                                showMessageModal("Failed to create subscription! Please try again.");
+                                return;
+                            }
+
+                            // Send subscription to your server
+                            const response = await fetch('/subscribe', {
+                                method: 'POST',
+                                body: JSON.stringify(subscription),
+                                headers: { 'Content-Type': 'application/json' }
+                            });
+
+                            if (response.ok) {
+                                currentSubscription = subscription; // Update the global subscription variable
+                                updateBellAndButton();
+                                showMessageModal("Successfully subscribed for notifications!");
+                                loadStats(); // Refresh stats
+                                console.log('Subscription sent to server');
+                            } else {
+                                console.error('Failed to send subscription to server:', response.statusText);
+                                showMessageModal("Failed to send subscription to server. Please try again later.");
+                            }
+                        } catch (error) {
+                            console.error('Subscription error:', error);
+                            // Differentiate between user-dismissed and other errors
+                            if (error.name === 'NotAllowedError') {
+                                showMessageModal("You've blocked notifications. Please unblock them in browser settings.");
+                            } else {
+                                showMessageModal('An error occurred during subscription: ' + error.message);
+                            }
+                        }
+                    });
+                })
+                .catch(function(error) {
+                    console.error('Service Worker registration failed:', error);
+                    showMessageModal("Service Worker registration failed. Push notifications will not work in this browser.");
+                    if (subscribeButton) {
+                        subscribeButton.disabled = true;
+                        bellIcon.style.color = "#6c757d"; // Gray out the bell
+                        bellIcon.style.animation = 'none'; // Stop animation
+                        subscribeButton.title = 'Notifications not supported or blocked';
+                    }
+                });
+        } else {
+            // Browser does not support service workers or push notifications
+            if (subscribeButton) {
+                subscribeButton.style.display = 'none'; // Hide the button
+            }
+            showMessageModal("Your browser does not support push notifications.");
+        }
+
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding)
+                .replace(/-/g, '+')
+                .replace(/_/g, '/');
+
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+
+            for (let i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
+            }
+            return outputArray;
+        }
+
+        // Initialize
+        loadStats(); // Load stats on page load
+    </script>
+</body>
+</html>

@@ -1,0 +1,744 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Theme with Particles</title>
+    <style>
+        .colorful-bell {
+            font-size: 24px;
+            color: #FFD700;
+            animation: bellRing 2s ease-in-out infinite;
+        }
+
+        @keyframes bellRing {
+            0% { transform: rotate(0deg); }
+            15% { transform: rotate(15deg); }
+            30% { transform: rotate(-15deg); }
+            45% { transform: rotate(10deg); }
+            60% { transform: rotate(-10deg); }
+            75% { transform: rotate(5deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s, opacity 0.3s ease;
+        }
+        .subscribeBtn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+        }
+        .modal-overlay.show {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: rgba(30, 30, 30, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
+            color: white;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            position: relative;
+        }
+
+        .modal-content h4 {
+            margin-top: 0;
+            color: #00ffea;
+        }
+
+        .modal-content button {
+            background: #4C1D95;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            width: auto;
+            display: inline-block;
+        }
+
+        .modal-content button:hover {
+            background: #6D28D9;
+        }
+
+        body {
+            background-color: #111827;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .cards {
+            margin-top: 150px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid #3e3e3e;
+            border-radius: 10px;
+            padding: 15px;
+            width: 320px;
+            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .card h2 {
+            font-size: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(to right, #34D399, #14B8A6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .card .datetime {
+            font-size: 0.9em;
+            opacity: 0.8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .card .datetime i {
+            color: #1E90FF;
+            margin: 0;
+        }
+
+        .card .play-button-link, .card .download-button-link {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .play-button, .download-button {
+            width: 50%;
+            padding: 10px;
+            background: linear-gradient(
+              to right,
+              rgba(30, 58, 138),
+              rgba(29, 78, 216),
+              rgba(37, 99, 235)
+            );
+
+            border: none;
+            border-radius: 3px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.3s;
+        }
+
+        .play-button:hover, .download-button:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .play-button i, .download-button i {
+            font-size: 1rem;
+        }
+
+        .log {
+            width: 100px;
+            height: 100px;
+            border-radius: 100px;
+        }
+
+        .header {
+            background-color: rgba(255, 255, 255, 0.1);
+            width: 100%;
+            height: 120px;
+            backdrop-filter: blur(10px);
+        }
+
+        .quote-section {
+            background: linear-gradient(45deg, #ff9a9e, #fad0c4);
+            border-radius: 8px;
+            text-align: center;
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            box-sizing: border-box;
+            color: #333;
+            margin: 0 auto 20px auto;
+            position: relative;
+            top: 0;
+        }
+
+        .quote-section h1 {
+            margin-top: 0;
+            font-size: 1.8em;
+        }
+
+        .quote-section blockquote {
+            font-style: italic;
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+
+        .author {
+            text-align: right;
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 0;
+        }
+
+        .vuuf {
+            text-align: right;
+            color: blue;
+        }
+        .switch {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 200px;
+            padding: 16px 24px;
+            margin: 50px auto 0 auto;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 20px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .switch span {
+            padding: 6px 12px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.25);
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .switch span:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(1.05);
+        }
+
+        .switch span.active {
+            background: linear-gradient(to right, #34D399, #14B8A6);
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+</head>
+<body>
+    <div id="particle-canvas"></div>
+    
+    <div class="learnpulse-brand" style="position: relative; text-align: center; padding: 30px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); margin: 20px auto; border-radius: 20px; max-width: 600px; box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3), inset 0 1px 0 rgba(255,255,255,0.2); overflow: hidden;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.1) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(255,255,255,0.08) 0%, transparent 50%); pointer-events: none;"></div>
+        <div style="position: relative; z-index: 2;">
+            <h1 style="color: white; font-size: 3em; margin: 0; text-shadow: 2px 2px 8px rgba(0,0,0,0.3); font-weight: 700; letter-spacing: -1px;">LearnPulse</h1>
+            <div style="width: 60px; height: 3px; background: linear-gradient(90deg, #fff, rgba(255,255,255,0.5)); margin: 15px auto; border-radius: 2px;"></div>
+            <p style="color: rgba(255,255,255,0.95); margin: 0; font-size: 1.2em; font-weight: 300; letter-spacing: 0.5px;">Your Learning Journey Starts Here</p>
+        </div>
+    </div>
+
+    <div class="quote-section">
+        <h1>Daily Inspiration</h1>
+        <blockquote>
+            "<%= title %>"
+        </blockquote>
+        <p class="author"><em>— <%= author %></em></p>
+    </div>
+
+    <div class="switch">
+        <span class="lecture">Lectures</span>
+        <span class="notes">Notes</span>
+    </div>
+    
+    <div class="cards">
+        <% data.forEach(user => { %>
+            <% if (routeType === 'aarambh') { %>
+                <% if (user.type == 'video') { %>
+                <div class="card effect3d">
+                    <img src="https://th.bing.com/th/id/OIP.PryQmk-ORcQP5yHdj2xSQQHaE8?rs=1&pid=ImgDetMain" alt="Placeholder Image">
+                    <h2><%= user.title %></h2>
+                    <span class="datetime">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Date: <%= user.date %></span>
+                        <i class="fas fa-clock"></i>
+                        <span>Time: <%= user.time %></span>
+                    </span>
+                    <a href="/player/<%= encodeURIComponent(user.link) %>" class="play-button-link">
+                        <button class="play-button">
+                            <i class="fas fa-play"></i>
+                            Play Now
+                        </button>
+                    </a>
+                </div>
+                <% } %>
+            <% } else { %>
+                <% if (!user.type) { %>
+                <div class="card effect3d">
+                    <img src="https://th.bing.com/th/id/OIP.PryQmk-ORcQP5yHdj2xSQQHaE8?rs=1&pid=ImgDetMain" alt="Placeholder Image">
+                    <h2><%= user.title %></h2>
+                    <span class="datetime">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Date: <%= user.date %></span>
+                        <i class="fas fa-clock"></i>
+                        <span>Time: <%= user.time %></span>
+                    </span>
+                    <a href="/player/<%= user.link %>" class="play-button-link">
+                        <button class="play-button">
+                            <i class="fas fa-play"></i>
+                            Play Now
+                        </button>
+                    </a>
+                </div>
+                <% } %>
+            <% } %>
+        <% }); %>
+    </div>
+
+    <button id="subscribeBtn" class="subscribeBtn">
+        <i class="fas fa-bell colorful-bell"></i>
+    </button>
+
+    <div id="messageModalOverlay" class="modal-overlay">
+        <div class="modal-content">
+            <h4 id="modalMessage"></h4>
+            <button id="modalCloseBtn">OK</button>
+        </div>
+    </div>
+
+<script>
+    const lecture = document.querySelector('.lecture');
+    const notes = document.querySelector('.notes');
+    const cards = document.querySelector('.cards');
+    const routeType = '<%= routeType %>';
+
+    // Set initial active state
+    lecture.classList.add('active');
+
+    function setActiveButton(activeBtn, inactiveBtn) {
+        activeBtn.classList.add('active');
+        inactiveBtn.classList.remove('active');
+    }
+
+    lecture.addEventListener('click', () => {
+        setActiveButton(lecture, notes);
+        cards.innerHTML = '';
+        
+        <% data.forEach(user => { %>
+            <% if (routeType === 'aarambh') { %>
+                <% if (user.type === 'video') { %>
+                    const cardDiv = document.createElement('div');
+                    cardDiv.className = 'card effect3d';
+                    cardDiv.innerHTML = `
+                        <img src="https://th.bing.com/th/id/OIP.PryQmk-ORcQP5yHdj2xSQQHaE8?rs=1&pid=ImgDetMain" alt="Placeholder Image">
+                        <h2><%= user.title %></h2>
+                        <span class="datetime">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Date: <%= user.date %></span>
+                            <i class="fas fa-clock"></i>
+                            <span>Time: <%= user.time %></span>
+                        </span>
+                        <a href="/player/<%= encodeURIComponent(user.link) %>" class="play-button-link">
+                            <button class="play-button">
+                                <i class="fas fa-play"></i>
+                                Play Now
+                            </button>
+                        </a>
+                    `;
+                    cards.appendChild(cardDiv);
+                <% } %>
+            <% } else { %>
+                <% if (!user.type || user.type === 'video') { %>
+                    const cardDiv = document.createElement('div');
+                    cardDiv.className = 'card effect3d';
+                    cardDiv.innerHTML = `
+                        <img src="https://th.bing.com/th/id/OIP.PryQmk-ORcQP5yHdj2xSQQHaE8?rs=1&pid=ImgDetMain" alt="Placeholder Image">
+                        <h2><%= user.title %></h2>
+                        <span class="datetime">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Date: <%= user.date %></span>
+                            <i class="fas fa-clock"></i>
+                            <span>Time: <%= user.time %></span>
+                        </span>
+                        <a href="/player/<%= user.link %>" class="play-button-link">
+                            <button class="play-button">
+                                <i class="fas fa-play"></i>
+                                Play Now
+                            </button>
+                        </a>
+                    `;
+                    cards.appendChild(cardDiv);
+                <% } %>
+            <% } %>
+        <% }); %>
+    });
+
+    notes.addEventListener('click', () => {
+        setActiveButton(notes, lecture);
+        cards.innerHTML = '';
+        
+        <% data.forEach(user => { %>
+            <% if (routeType === 'aarambh') { %>
+                <% if (user.type === 'notes') { %>
+                    const cardDiv = document.createElement('div');
+                    cardDiv.className = 'card effect3d';
+                    cardDiv.innerHTML = `
+                        <img src="https://th.bing.com/th/id/OIP.PryQmk-ORcQP5yHdj2xSQQHaE8?rs=1&pid=ImgDetMain" alt="Placeholder Image">
+                        <h2><%= user.title %></h2>
+                        <span class="datetime">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Date: <%= user.date %></span>
+                            <i class="fas fa-clock"></i>
+                            <span>Time: <%= user.time %></span>
+                        </span>
+                        <a href="/pdf/<%= encodeURIComponent(user.link) %>" class="download-button-link">
+                            <button class="download-button">
+                                <i class="fas fa-download"></i>
+                                Download
+                            </button>
+                        </a>
+                    `;
+                    cards.appendChild(cardDiv);
+                <% } %>
+            <% } else { %>
+                <% if (user.type === 'notes') { %>
+                    const cardDiv = document.createElement('div');
+                    cardDiv.className = 'card effect3d';
+                    cardDiv.innerHTML = `
+                        <img src="https://th.bing.com/th/id/OIP.PryQmk-ORcQP5yHdj2xSQQHaE8?rs=1&pid=ImgDetMain" alt="Placeholder Image">
+                        <h2><%= user.title %></h2>
+                        <span class="datetime">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Date: <%= user.date %></span>
+                            <i class="fas fa-clock"></i>
+                            <span>Time: <%= user.time %></span>
+                        </span>
+                        <a href="/pdf/<%= user.link %>" class="download-button-link">
+                            <button class="download-button">
+                                <i class="fas fa-download"></i>
+                                Download
+                            </button>
+                        </a>
+                    `;
+                    cards.appendChild(cardDiv);
+                <% } %>
+            <% } %>
+        <% }); %>
+    });
+</script>
+
+<script>
+    particlesJS("particle-canvas", {
+        particles: {
+            number: {
+                value: 120,
+                density: {
+                    enable: true,
+                    value_area: 900,
+                },
+            },
+            color: {
+                value: "#e0f7fa",
+            },
+            shape: {
+                type: "circle",
+                stroke: {
+                    width: 0,
+                    color: "#000000",
+                },
+                polygon: {
+                    nb_sides: 6,
+                },
+            },
+            opacity: {
+                value: 0.6,
+                random: true,
+                anim: {
+                    enable: true,
+                    speed: 1.5,
+                    opacity_min: 0.2,
+                    sync: false,
+                },
+            },
+            size: {
+                value: 4,
+                random: true,
+                anim: {
+                    enable: true,
+                    speed: 4,
+                    size_min: 0.3,
+                    sync: false,
+                },
+            },
+            line_linked: {
+                enable: true,
+                distance: 160,
+                color: "#b0bec5",
+                opacity: 0.5,
+                width: 1.5,
+            },
+            move: {
+                enable: true,
+                speed: 3,
+                direction: "none",
+                random: true,
+                straight: false,
+                out_mode: "out",
+                bounce: false,
+                attract: {
+                    enable: false,
+                    rotateX: 600,
+                    rotateY: 1200,
+                },
+            },
+        },
+        interactivity: {
+            detect_on: "canvas",
+            events: {
+                onhover: {
+                    enable: true,
+                    mode: "repulse",
+                },
+                onclick: {
+                    enable: true,
+                    mode: "push",
+                },
+                resize: true,
+            },
+            modes: {
+                grab: {
+                    distance: 400,
+                    line_linked: {
+                        opacity: 1,
+                    },
+                },
+                bubble: {
+                    distance: 400,
+                    size: 40,
+                    duration: 2,
+                    opacity: 8,
+                    speed: 3,
+                },
+                repulse: {
+                    distance: 250,
+                    duration: 0.4,
+                },
+                push: {
+                    particles_nb: 6,
+                },
+                remove: {
+                    particles_nb: 2,
+                },
+            },
+        },
+        retina_detect: true,
+    });
+
+    let currentSubscription = null;
+
+    const messageModalOverlay = document.getElementById('messageModalOverlay');
+    const modalMessage = document.getElementById('modalMessage');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+    const subscribeButton = document.getElementById('subscribeBtn');
+    const bellIcon = subscribeButton.querySelector('.colorful-bell');
+
+    function showMessageModal(message) {
+        modalMessage.textContent = message;
+        messageModalOverlay.classList.add('show');
+    }
+
+    modalCloseBtn.addEventListener('click', () => {
+        messageModalOverlay.classList.remove('show');
+    });
+
+    function updateBellAndButton() {
+        if (bellIcon && subscribeButton) {
+            if (currentSubscription) {
+                bellIcon.style.color = '#4CAF50';
+                bellIcon.style.animation = 'none';
+                subscribeButton.title = 'You are subscribed!';
+            } else {
+                bellIcon.style.color = '#FFD700';
+                bellIcon.style.animation = 'bellRing 2s ease-in-out infinite';
+                subscribeButton.title = 'Subscribe to notifications';
+            }
+        }
+    }
+
+    if ('serviceWorker' in navigator && 'PushManager' in window) {
+        navigator.serviceWorker.register('/sw.js')
+            .then(async function(reg) {
+                console.log('Service Worker registered:', reg);
+                currentSubscription = await reg.pushManager.getSubscription();
+                updateBellAndButton();
+
+                if (subscribeButton) {
+                    subscribeButton.addEventListener("click", async function() {
+                    if (currentSubscription) {
+                        try {
+                            await currentSubscription.unsubscribe();
+                            const response = await fetch('/unsubscribe', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ endpoint: currentSubscription.endpoint })
+                            });
+                            currentSubscription = null;
+                            showMessageModal("Successfully unsubscribed from notifications.");
+                            updateBellAndButton();
+                            console.log('Unsubscribed from push notifications.');
+                        } catch (error) {
+                            console.error('Error unsubscribing:', error);
+                            showMessageModal('Error unsubscribing: ' + error.message);
+                        }
+                        return;
+                    }
+
+                    try {
+                        const permission = await Notification.requestPermission();
+                        if (permission !== 'granted') {
+                            showMessageModal("Notification permission denied! Please allow notifications in your browser settings.");
+                            return;
+                        }
+
+                        const vapidKey = '<%= process.env.VAPID_PUBLIC_KEY || "BEl62iUYgUivxIkv69yViEuiBIa40HI2PpGgM-CnVN-LgVnhf1sY7lCHTjPDrOyJRUGkF9gO9pVxAb6r-M7TRAk" %>';
+                        const subscription = await reg.pushManager.subscribe({
+                            userVisibleOnly: true,
+                            applicationServerKey: urlBase64ToUint8Array(vapidKey)
+                        });
+
+                        if (!subscription) {
+                            showMessageModal("Failed to create subscription! Please try again.");
+                            return;
+                        }
+
+                        const response = await fetch('/subscribe', {
+                            method: 'POST',
+                            body: JSON.stringify(subscription),
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+
+                        if (response.ok) {
+                            currentSubscription = subscription;
+                            updateBellAndButton();
+                            showMessageModal("Successfully subscribed for notifications!");
+                            console.log('Subscription sent to server');
+                        } else {
+                            console.error('Failed to send subscription to server:', response.statusText);
+                            showMessageModal("Failed to send subscription to server. Please try again later.");
+                        }
+                    } catch (error) {
+                        console.error('Subscription error:', error);
+                        if (error.name === 'NotAllowedError') {
+                            showMessageModal("You've blocked notifications. Please unblock them in browser settings.");
+                        } else {
+                            showMessageModal('An error occurred during subscription: ' + error.message);
+                        }
+                    }
+                });
+                }
+            })
+            .catch(function(error) {
+                console.error('Service Worker registration failed:', error);
+                showMessageModal("Service Worker registration failed. Push notifications will not work in this browser.");
+                if (subscribeButton && bellIcon) {
+                    subscribeButton.disabled = true;
+                    bellIcon.style.color = "#6c757d";
+                    bellIcon.style.animation = 'none';
+                    subscribeButton.title = 'Notifications not supported or blocked';
+                }
+            });
+    } else {
+        if (subscribeButton) {
+            subscribeButton.style.display = 'none';
+        }
+        showMessageModal("Your browser does not support push notifications.");
+    }
+
+    function urlBase64ToUint8Array(base64String) {
+        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+        const base64 = (base64String + padding)
+            .replace(/-/g, '+')
+            .replace(/_/g, '/');
+
+        const rawData = window.atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+
+        for (let i = 0; i < rawData.length; ++i) {
+            outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
+    }
+</script>
+</body>
+</html>

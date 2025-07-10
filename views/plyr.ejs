@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LearnPulse - Video Player</title>
+  <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css"/>
+  <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
+  
+  <style>
+    body {
+      margin: 0;
+      background: #0a0a0a;
+      font-family: 'Poppins', sans-serif;
+    }
+    #player {
+      width: 100%;
+      height: 100vh;
+      max-height: 100vh;
+      object-fit: contain;
+    }
+    .plyr__controls {
+      background: rgba(0, 0, 0, 0.8) !important;
+    }
+    .plyr__control--custom {
+      color: #fff;
+      padding: 10px;
+      margin: 0 5px;
+      transition: color 0.3s;
+    }
+    .plyr__control--custom:hover {
+      color: #a1a1aa;
+    }
+  </style>
+</head>
+<body>
+
+<!-- LearnPulse Brand Header -->
+<div style="position: fixed; top: 15px; left: 15px; z-index: 9999; background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); padding: 10px 20px; border-radius: 15px; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4), inset 0 1px 0 rgba(255,255,255,0.2); backdrop-filter: blur(10px); overflow: hidden;">
+  <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.12) 0%, transparent 60%); pointer-events: none;"></div>
+  <h3 style="position: relative; color: white; margin: 0; font-size: 1.2em; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); font-weight: 600; letter-spacing: -0.5px;">LearnPulse</h3>
+</div>
+
+<!-- Video Player -->
+<video id="player" controls></video>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  feather.replace();
+
+  const video = document.getElementById("player");
+  
+  const originalUrl = decodeURIComponent("<%=url%>");
+  let currentUrl = originalUrl;
+
+  let errorShown = false;
+
+  if (!originalUrl) {
+    Swal.fire("Error", "Video URL is required.", "error");
+    return;
+  }
+
+  // Initialize Plyr
+  const player = new Plyr(video, {
+    controls: [
+      'play-large',
+      'rewind',
+      'play',
+      'fast-forward',
+      'progress',
+      'current-time',
+      'duration',
+      'mute',
+      'volume',
+      'settings',
+      'fullscreen',
+      'custom-download'
+    ],
+    settings: ['quality', 'speed'],
+    quality: {
+      default: 720,
+      options: [720, 480, 360, 240],
+      forced: true,
+      onChange: (quality) => {
+        const qualityMap = {
+          240: 'index_1',
+          360: 'index_2',
+          480: 'index_3',
+          720: 'index_4'
+        };
+        const newQuality = qualityMap[quality];
+        const newUrl = originalUrl.replace(/index_\d\.m3u8/, `${newQuality}.m3u8`);
+        const currentTime = video.currentTime;
+
+        Swal.fire({
+          title: `Change to ${quality}p?`,
+          text: "Are you sure?",
+          showCancelButton: true,
+          confirmButtonText: "Yes"
+        }).then((res) => {
+          if (res.isConfirmed) {
+            currentUrl = newUrl;
+            loadVideo(newUrl, currentTime);
+          }
+        });
+      }
+    }
+  });
+
+  // Add custom download button to Plyr controls
+  player.on('ready', () => {
+    const controls = player.elements.controls;
+    const customDownloadButton = document.createElement('button');
+    customDownloadButton.className = 'plyr__control plyr__control--custom';
+    customDownloadButton.innerHTML = '<i data-feather="download"></i>';
+    customDownloadButton.setAttribute('data-plyr', 'custom-download');
+    customDownloadButton.title = 'Download Link';
+    customDownloadButton.onclick = copyM3U8;
+
+    controls.appendChild(customDownloadButton);
+    feather.replace();
+  });
+
+  player.on('controlsshown', () => {
+    feather.replace();
+  });
+
+  function loadVideo(url, resumeTime = 0) {
+    if (Hls.isSupported()) {
+      const hls = new Hls();
+      hls.loadSource(url);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        video.currentTime = resumeTime;
+        video.play().catch(() => {});
+      });
+    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+      video.src = url;
+      video.currentTime = resumeTime;
+      video.play().catch(() => {});
+    }
+  }
+
+  loadVideo(currentUrl);
+
+  window.copyM3U8 = () => {
+    navigator.clipboard.writeText(currentUrl).then(() => {
+      Swal.fire({
+        title: "download link is copied.",
+        text: "Go to download?",
+        confirmButtonText: "Yes"
+      }).then((res) => {
+        if (res.isConfirmed) {
+          window.location.href="https://m3u8.dev";
+        }
+      });
+    });
+  };
+
+  window.changeQuality = () => {
+    // This function is no longer needed as quality is handled by Plyr's settings
+  };
+
+  function getQualityFromUrl(url) {
+    const match = url.match(/index_(\d)\.m3u8/);
+    return match ? `index_${match[1]}` : "";
+  }
+
+  function getQualityLabel(code) {
+    return {
+      index_1: "240p",
+      index_2: "360p",
+      index_3: "480p",
+      index_4: "720p"
+    }[code] || "Unknown";
+  }
+
+  video.addEventListener("error", () => {
+    const error = video.error;
+    if (!errorShown && error && (error.code === 3 || error.code === 4)) {
+      errorShown = true;
+      Swal.fire({
+        icon: "warning",
+        title: "Video Playback Error",
+        text: "This video might not support the selected quality. Please try switching to another quality.",
+        confirmButtonText: "Change Quality",
+        confirmButtonColor: "#6366f1"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          player.toggleControls(true);
+          player.toggleSettings(true);
+        }
+      });
+    }
+  });
+});
+</script>
+
+</body>
+</html>

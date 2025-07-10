@@ -1,0 +1,301 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LearnPulse Dashboard</title>
+    <script>
+        function displaySchedule() {
+            const scheduleData = [
+                { day: "Sunday", subjects: [{ time: "17:00", subject: "Math" }, { time: "20:00", subject: "Science" }] },
+                { day: "Monday", subjects: [{ time: "17:00", subject: "SST" }, { time: "20:00", subject: "Math" }] },
+                { day: "Tuesday", subjects: [{ time: "17:00", subject: "SST" }, { time: "20:00", subject: "Math" }] },
+                { day: "Wednesday", subjects: [{ time: "17:00", subject: "Science" }, { time: "20:00", subject: "SST" }] },
+                { day: "Thursday", subjects: [{ time: "17:00", subject: "Science" }, { time: "20:00", subject: "SST" }] },
+                { day: "Friday", subjects: [{ time: "17:00", subject: "Science" }, { time: "20:00", subject: "Math" }] },
+                { day: "Saturday", subjects: [{ time: "17:00", subject: "Science" }, { time: "20:00", subject: "Math" }] }
+            ];
+            const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            const todayName = days[new Date().getDay()];
+            let found = false;
+            const liveClassSection = document.getElementById('liveClassSection');
+
+            if (!liveClassSection) return;
+
+            liveClassSection.innerHTML = '';
+
+            scheduleData.forEach(daySchedule => {
+                if (daySchedule.day === todayName) {
+                    found = true;
+                    daySchedule.subjects.forEach(session => {
+                        let link = "";
+                        if (session.time === "17:00") {
+                            link = "https://anym3u8player.com/m3u8-player-chat/chat/67ffcd3f6e6d8/?url=aHR0cHM6Ly9kMWt3NzV6Y3Y0dTk4Yy5jbG91ZGZyb250Lm5ldC9vdXQvdjEvMjg3ODEwZDk2N2NjNDI4ZTliZDk5MjAwMmU1NWI3MmMvaW5kZXhfMS5tM3U4";
+                        } else if (session.time === "20:00") {
+                            link = "https://anym3u8player.com/m3u8-player-chat/chat/67ffce01deadb/?url=aHR0cHM6Ly9kMWt3NzV6Y3Y0dTk4Yy5jbG91ZGZyb250Lm5ldC9vdXQvdjEvYzMyYzM3M2M5ODc0NDMwY2I2MDM5NDA4NzQ1YTFhNWUvaW5kZXhfMS5tM3U4";
+                        }
+                        liveClassSection.innerHTML += `
+                            <div class="live-class-info">
+                                <p><strong>${session.subject}</strong></p>
+                                <p>Time: ${session.time}</p>
+                                <a href="${link}" target="_blank">
+                                    <button>Join Now</button>
+                                </a>
+                            </div>
+                        `;
+                    });
+                }
+            });
+
+            if (!found) {
+                liveClassSection.innerHTML += "<p>🚀 No lectures today! Enjoy your free time. 🎉</p>";
+            }
+        }
+
+        window.onload = displaySchedule;
+    </script>
+    <style>
+        #userNameDisplay {
+            color: red;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #000000;
+            width: 100%;
+        }
+
+        .header h2 {
+            text-align: center;
+            margin: 50px;
+            font-size: 2.5em;
+            -webkit-text-stroke: 1px rgba(255, 4, 4, 0.2);
+            background: linear-gradient(to right, #0011ff, #2575FC);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .st {
+            margin-top: 150px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .subject {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid #3e3e3e;
+            border-radius: 10px;
+            margin: 1%;
+            padding: 20px;
+            width: 300px;
+            transition: transform 0.2s;
+            z-index: 1000;
+        }
+
+        .subject p {
+            font-style: italic;
+            font-size: 1.2em;
+            background: linear-gradient(to right, #FF00EA, #2575FC);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 20px;
+            text-align: center;
+        }
+
+        .img {
+            position: relative;
+            top: 10px;
+            left: 10px;
+            width: 72px;
+            height: 72px;
+            border-radius: 100px;
+        }
+
+        .subject h2 {
+            -webkit-text-stroke: 1px rgba(255, 4, 4, 0.2);
+            background: linear-gradient(to right, #FF00EA, #2575FC);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: absolute;
+            top: 30px;
+            left: 120px;
+        }
+
+        .subject button, .live-class-info button {
+            background: linear-gradient(135deg, #FF6B81, #FF4757);
+            color: white;
+            font-family: sans-serif;
+            border: none;
+            border-radius: 5px;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s;
+            width: auto;
+        }
+
+        .subject button:hover, .live-class-info button:hover {
+            background: linear-gradient(135deg, #FF4757, #FF6B81);
+        }
+
+        .user-info {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid #3e3e3e;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px auto;
+            width: 80%;
+            max-width: 600px;
+            color: white;
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .user-info h3 {
+            background: linear-gradient(to right, #0011ff, #2575FC);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .live-class-section {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid #3e3e3e;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px auto;
+            width: 80%;
+            max-width: 600px;
+            color: white;
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .live-class-section h3 {
+            background: linear-gradient(to right, #00FF00, #008000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .live-class-info {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+            color: white;
+            text-align: center;
+        }
+
+        .live-class-info p {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <div id="particles-js">
+        <canvas class="particles-js-canvas-el" width="1092" height="922" style="width: 100%; height: 100%;"></canvas>
+    </div>
+    <div class="learnpulse-brand" style="position: relative; text-align: center; padding: 30px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); margin: 20px auto; border-radius: 20px; max-width: 600px; color: white; box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3), inset 0 1px 0 rgba(255,255,255,0.2); overflow: hidden;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.1) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(255,255,255,0.08) 0%, transparent 50%); pointer-events: none;"></div>
+        <div style="position: relative; z-index: 2;">
+            <h1 style="font-size: 3em; margin: 0; text-shadow: 2px 2px 8px rgba(0,0,0,0.3); font-weight: 700; letter-spacing: -1px;">LearnPulse</h1>
+            <div style="width: 60px; height: 3px; background: linear-gradient(90deg, #fff, rgba(255,255,255,0.5)); margin: 15px auto; border-radius: 2px;"></div>
+            <p style="margin: 0; font-size: 1.2em; font-weight: 300; letter-spacing: 0.5px; opacity: 0.95;">Your Learning Journey Starts Here</p>
+        </div>
+    </div>
+    <div class="user-info">
+        <h3 id="userNameDisplay">Welcome</h3>
+    </div>
+    <div id="liveClassSection" class="live-class-section"></div>
+    <div class="st">
+        <div class="subject">
+            <img class="img" src="https://i.postimg.cc/j28YvmRb/mathematics-with-icon-concept-with-round-or-circle-shape-free-vector.jpg">
+            <h2>Mathematics</h2>
+            <p>"Mathematics is not about numbers, equations, computations, or algorithms: it is about understanding."</p>
+            <a href="./new/11/maths"><button>Explore</button></a>
+        </div>
+        <div class="subject">
+            <img class="img" src="https://i.postimg.cc/rsHYDk8K/images.jpg">
+            <h2>Business Studies</h2>
+            <p>"Social sciences help us understand the world we live in and inspire us to build a better tomorrow."</p>
+            <a href="./new/10/Business_studies"><button>Explore</button></a>
+        </div>
+        <div class="subject">
+            <img class="img" src="https://i.postimg.cc/rsHYDk8K/images.jpg">
+            <h2>Accounts</h2>
+            <p>"Social sciences help us understand the world we live in and inspire us to build a better tomorrow."</p>
+            <a href="./new/10/Accounts"><button>Explore</button></a>
+        </div>
+        <div class="subject">
+            <img class="img" src="https://i.postimg.cc/rsHYDk8K/images.jpg">
+            <h2>Economics</h2>
+            <p>"Social sciences help us understand the world we live in and inspire us to build a better tomorrow."</p>
+            <a href="./new/10/Economics"><button>Explore</button></a>
+        </div>
+        <div class="subject">
+            <img class="img" src="https://i.postimg.cc/4y1xGWZL/1000-F-32015489-pzew-S3bmq-H9w-Wytl-Ozxqaq-MCWk-Rc-S1d7.jpg">
+            <h2>English</h2>
+            <p>"English is the bridge that connects ideas, cultures, and people."</p>
+            <a href="./new/11/English"><button>Explore</button></a>
+        </div>
+        <div class="subject">
+            <img class="img" src="https://i.postimg.cc/4y1xGWZL/1000-F-32015489-pzew-S3bmq-H9w-Wytl-Ozxqaq-MCWk-Rc-S1d7.jpg">
+            <h2>English Grammar</h2>
+            <p>"English is the bridge that connects ideas, cultures, and people."</p>
+            <a href="./new/11/English_grammar"><button>Explore</button></a>
+        </div>
+        <div class="subject">
+            <img class="img" src="https://i.postimg.cc/4y1xGWZL/1000-F-32015489-pzew-S3bmq-H9w-Wytl-Ozxqaq-MCWk-Rc-S1d7.jpg">
+            <h2>Reading and Writing</h2>
+            <p>"English is the bridge that connects ideas, cultures, and people."</p>
+            <a href="./new/11/readingandwriting"><button>Explore</button></a>
+        </div>
+        <div class="subject">
+            <img class="img" src="https://i.postimg.cc/s28BHHD5/d36a0bf2616e797e1719bdc6c1a3c7cc.jpg">
+            <h2>Hindi</h2>
+            <p>"Hindi is the soul of Indian culture, connecting hearts through words."</p>
+            <a href="./new/11/hindi"><button>Explore</button></a>
+        </div>
+    </div>
+    <script>
+        particlesJS("particles-js", {
+            particles: {
+                number: { value: 120, density: { enable: true, value_area: 900 } },
+                color: { value: "#e0f7fa" },
+                shape: { type: "circle", stroke: { width: 0, color: "#000000" }, polygon: { nb_sides: 6 } },
+                opacity: { value: 0.6, random: true, anim: { enable: true, speed: 1.5, opacity_min: 0.2, sync: false } },
+                size: { value: 4, random: true, anim: { enable: true, speed: 4, size_min: 0.3, sync: false } },
+                line_linked: { enable: true, distance: 160, color: "#b0bec5", opacity: 0.5, width: 1.5 },
+                move: { enable: true, speed: 3, direction: "none", random: true, straight: false, out_mode: "out", bounce: false, attract: { enable: false, rotateX: 600, rotateY: 1200 } }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: { onhover: { enable: true, mode: "repulse" }, onclick: { enable: true, mode: "push" }, resize: true },
+                modes: { grab: { distance: 400, line_linked: { opacity: 1 } }, bubble: { distance: 400, size: 40, duration: 2, opacity: 8, speed: 3 }, repulse: { distance: 250, duration: 0.4 }, push: { particles_nb: 6 }, remove: { particles_nb: 2 } }
+            },
+            retina_detect: true
+        });
+    </script>
+</body>
+</html>
